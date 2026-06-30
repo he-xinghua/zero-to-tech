@@ -383,10 +383,20 @@ button:active {
   75% { transform: translateX(6px); }
 }
 
+/* ===== 评级标签（反应测试） ===== */
+.rating-badge {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 6px 0 2px;
+  min-height: 20px;
+}
+
 /* ===== 划消任务 ===== */
 .cancel-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 5px;
   max-width: 380px;
   margin: 8px auto;

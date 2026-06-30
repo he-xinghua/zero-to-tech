@@ -78,17 +78,19 @@ function switchTab(tabId) {
 }
 
 // ============================================================
-//  反应速度测试（重构名称避免冲突）
+//  反应速度测试
 // ============================================================
 const reactionArea = document.getElementById('reactionArea');
 const reactionText = document.getElementById('reactionText');
 const reactionHint = document.getElementById('reactionHint');
 const lastTimeEl = document.getElementById('lastTime');
 const bestTimeEl = document.getElementById('bestTime');
+const reactionRatingEl = document.getElementById('reactionRating');
 
 let reactionState = 'idle';
 let reactionTimeout = null;
 let reactionStart = 0;
+let reactionResults = [];
 let reactionBest = localStorage.getItem('reactionBest')
   ? Number(localStorage.getItem('reactionBest'))
   : Infinity;
@@ -97,12 +99,23 @@ if (reactionBest !== Infinity) {
   bestTimeEl.textContent = reactionBest;
 }
 
+function getReactionRating(ms) {
+  if (ms < 150) return { emoji: '🏆', label: '卓越', desc: '前 1%' };
+  if (ms < 180) return { emoji: '🥇', label: '精英', desc: '职业电竞级' };
+  if (ms < 210) return { emoji: '🥈', label: '优秀', desc: '前 15%' };
+  if (ms < 250) return { emoji: '🥉', label: '良好', desc: '前 35%' };
+  if (ms < 300) return { emoji: '👍', label: '平均', desc: '正常成人' };
+  if (ms < 350) return { emoji: '🐢', label: '偏慢', desc: '低于平均' };
+  return { emoji: '🐌', label: '待改善', desc: '后 20%' };
+}
+
 function startReactionGame() {
   if (reactionTimeout) clearTimeout(reactionTimeout);
   reactionState = 'waiting';
   reactionArea.className = 'game-area reaction-area waiting';
   reactionText.textContent = '等待绿色...';
   reactionHint.textContent = '变绿后快速点击！';
+  reactionRatingEl.textContent = '';
 
   const delay = 1000 + Math.random() * 3000;
   reactionTimeout = setTimeout(() => {
@@ -133,14 +146,28 @@ function handleReactionClick() {
     reactionState = 'idle';
     reactionArea.className = 'game-area';
     reactionText.textContent = `${rt} ms`;
-    reactionHint.textContent = '点击游戏区域再来一次';
     lastTimeEl.textContent = rt;
+
+    // 评级
+    const rating = getReactionRating(rt);
+    reactionRatingEl.innerHTML = `${rating.emoji} ${rating.label} — ${rating.desc}`;
+
+    reactionResults.push(rt);
 
     if (rt < reactionBest) {
       reactionBest = rt;
       bestTimeEl.textContent = rt;
       localStorage.setItem('reactionBest', rt);
-      reactionHint.textContent = '🎉 新纪录！再试一次';
+    }
+
+    // 5 次后显示平均
+    if (reactionResults.length >= 5) {
+      const avg = Math.round(reactionResults.reduce((a, b) => a + b, 0) / 5);
+      const avgRating = getReactionRating(avg);
+      reactionHint.textContent = `📊 5 次平均：${avg} ms (${avgRating.emoji} ${avgRating.label}) — 点击再来一组`;
+      reactionResults = [];
+    } else {
+      reactionHint.textContent = `已完成 ${reactionResults.length}/5 次，点击继续`;
     }
   }
 }
@@ -170,6 +197,28 @@ function randomDigit() {
   return Math.floor(Math.random() * 10);
 }
 
+function showDigit(index) {
+  if (index >= digitSequence.length) {
+    digitDisplay.textContent = '?';
+    digitHint.textContent = '用下方键盘按顺序输入数字';
+    digitState = 'inputting';
+    digitInputDisplay.textContent = '';
+    digitUserInput = [];
+    return;
+  }
+
+  digitDisplay.textContent = digitSequence[index];
+  digitDisplay.style.fontSize = '56px';
+
+  // 800ms 显示后 → 200ms 空白帧（解决连续相同数字无法分辨）
+  digitTimeout = setTimeout(() => {
+    digitDisplay.textContent = '·';
+    digitTimeout = setTimeout(() => {
+      showDigit(index + 1);
+    }, 200);
+  }, 800);
+}
+
 function startDigitSpan() {
   if (digitState === 'playing') return;
 
@@ -186,23 +235,7 @@ function startDigitSpan() {
     digitSequence.push(randomDigit());
   }
 
-  let i = 0;
-  digitDisplay.textContent = digitSequence[i];
-  digitDisplay.style.fontSize = '56px';
-
-  digitTimeout = setInterval(() => {
-    i++;
-    if (i >= digitSequence.length) {
-      clearInterval(digitTimeout);
-      digitDisplay.textContent = '?';
-      digitHint.textContent = '用下方键盘按顺序输入数字';
-      digitState = 'inputting';
-      digitInputDisplay.textContent = '';
-      digitUserInput = [];
-      return;
-    }
-    digitDisplay.textContent = digitSequence[i];
-  }, 1000);
+  showDigit(0);
 }
 
 function numpadInput(n) {
@@ -383,29 +416,38 @@ let cancelCorrect = 0;
 let cancelWrong = 0;
 let cancelTargetCells = [];
 let cancelTimer = null;
-let cancelRemain = 30;
+let cancelRemain = 15;
 let cancelLocked = false;
+let cancelTimeStart = 0;
 
-const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-const TARGET = 'A';
+const CANCEL_DISTRACTORS = ['8', '9', '0', '5'];
+const CANCEL_TARGET = '6';
+
+function getCancelRating(correct, wrong) {
+  if (correct === 12 && wrong === 0) return '🏆 S 级 — 完美！';
+  if (correct >= 10 && wrong <= 2) return '🥇 A 级 — 优秀！';
+  if (correct >= 8) return '🥈 B 级 — 继续加油';
+  return '🥉 C 级 — 需更多练习';
+}
 
 function startCancelTask() {
   cancelState = 'playing';
   cancelCorrect = 0;
   cancelWrong = 0;
-  cancelRemain = 30;
+  cancelRemain = 15;
   cancelTargetCells = [];
   cancelLocked = false;
+  cancelTimeStart = performance.now();
   cancelCorrectEl.textContent = '0';
   cancelWrongEl.textContent = '0';
-  cancelRemainEl.textContent = '30';
+  cancelRemainEl.textContent = '15';
   cancelStartBtn.disabled = true;
   cancelStartBtn.style.opacity = '0.5';
-  cancelHint.innerHTML = '点击所有字母 <strong>A</strong>';
+  cancelHint.innerHTML = '15 秒内点击所有数字 <strong>6</strong>';
 
-  // 生成 6×5 网格
-  const total = 30;
-  const targetCount = 10;
+  // 生成 8×5 网格
+  const total = 40;
+  const targetCount = 12;
   const positions = Array.from({ length: total }, (_, i) => i);
   for (let i = positions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -421,7 +463,9 @@ function startCancelTask() {
     cell.className = 'cancel-cell';
     const isTarget = targetPositions.has(i);
     cell.dataset.isTarget = isTarget ? '1' : '0';
-    cell.textContent = isTarget ? TARGET : LETTERS[Math.floor(Math.random() * (LETTERS.length - 1)) + 1];
+    cell.textContent = isTarget
+      ? CANCEL_TARGET
+      : CANCEL_DISTRACTORS[Math.floor(Math.random() * CANCEL_DISTRACTORS.length)];
     cell.addEventListener('click', () => handleCancelClick(cell));
     cancelGrid.appendChild(cell);
     if (isTarget) cancelTargetCells.push(cell);
@@ -447,8 +491,7 @@ function handleCancelClick(cell) {
     cancelCorrect++;
     cancelCorrectEl.textContent = cancelCorrect;
 
-    // 检查是否全部找到
-    if (cancelCorrect === 10) {
+    if (cancelCorrect === 12) {
       endCancelTask(true);
     }
   } else {
@@ -459,7 +502,7 @@ function handleCancelClick(cell) {
     cancelLocked = true;
     setTimeout(() => {
       cell.classList.remove('wrong');
-      cell.textContent = LETTERS[Math.floor(Math.random() * (LETTERS.length - 1)) + 1];
+      cell.textContent = CANCEL_DISTRACTORS[Math.floor(Math.random() * CANCEL_DISTRACTORS.length)];
       cancelLocked = false;
     }, 600);
   }
@@ -469,19 +512,20 @@ function endCancelTask(completed) {
   if (cancelState === 'done') return;
   cancelState = 'done';
   if (cancelTimer) clearInterval(cancelTimer);
-  cancelRemainEl.textContent = '0';
+  const elapsed = Math.round((performance.now() - cancelTimeStart) / 1000);
 
+  const rating = getCancelRating(cancelCorrect, cancelWrong);
   if (completed) {
-    cancelHint.textContent = `🎉 全部找齐！用时 ${30 - cancelRemain} 秒`;
+    cancelHint.textContent = `🎉 全部找齐！用时 ${elapsed}s | ${rating}`;
   } else {
-    cancelHint.textContent = `⏰ 时间到！剩余 ${10 - cancelCorrect} 个未找到`;
+    cancelHint.textContent = `⏰ 时间到！${cancelCorrect}/12 个正确 | ${rating}`;
   }
 
   // 显示所有未找到的目标
   cancelTargetCells.forEach(cell => {
     if (!cell.classList.contains('found')) {
       cell.classList.add('found');
-      cell.textContent = 'A';
+      cell.textContent = CANCEL_TARGET;
     }
   });
 
