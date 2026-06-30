@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的交互小工具</title>
+    <title>认知训练小工具</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
@@ -12,21 +12,83 @@
       <button id="themeToggle" class="theme-toggle" aria-label="切换深色模式">🌙</button>
 
       <!-- 问候卡片 -->
-      <div class="card">
+      <div class="card greeting-card">
         <h1 id="greeting">你好！</h1>
         <div id="clock" class="clock">--:--:--</div>
-        <p id="message">欢迎来到我的交互小工具页面。</p>
-        <button onclick="changeMessage()">换一条消息</button>
+        <p id="message">欢迎来到认知训练小工具。</p>
+        <button onclick="changeMessage()">换一条</button>
       </div>
 
-      <!-- 计数器卡片 -->
-      <div class="card counter-card">
-        <h2>计数器</h2>
-        <div class="counter-display" id="counter">0</div>
-        <div class="counter-actions">
-          <button onclick="decrement()">−</button>
-          <button onclick="resetCounter()">重置</button>
-          <button onclick="increment()">+</button>
+      <!-- 标签栏 -->
+      <div class="tab-bar" id="tabBar">
+        <div class="tab-item active" data-tab="reaction" onclick="switchTab('reaction')">⚡ 反应</div>
+        <div class="tab-item" data-tab="digit" onclick="switchTab('digit')">🧠 数字</div>
+        <div class="tab-item" data-tab="chimp" onclick="switchTab('chimp')">🐵 黑猩猩</div>
+        <div class="tab-item" data-tab="cancel" onclick="switchTab('cancel')">✂️ 划消</div>
+      </div>
+
+      <!-- 游戏容器 -->
+      <div class="game-container">
+        <!-- 面板：反应速度 -->
+        <div class="game-panel active" id="panel-reaction">
+          <div class="game-area reaction-area" id="reactionArea" onclick="handleReactionClick()">
+            <span class="game-text" id="reactionText">点击开始</span>
+          </div>
+          <p class="game-hint" id="reactionHint">点击上方区域开始测试</p>
+          <div class="game-stats">
+            <span>上次：<strong id="lastTime">--</strong> ms</span>
+            <span>最快：<strong id="bestTime">--</strong> ms</span>
+          </div>
+          <button onclick="startReactionGame()">重新开始</button>
+        </div>
+
+        <!-- 面板：数字广度 -->
+        <div class="game-panel" id="panel-digit">
+          <div class="digit-display" id="digitDisplay">—</div>
+          <p class="game-hint" id="digitHint">点击"开始"后记住出现的数字</p>
+          <div class="digit-stats">
+            <span>当前广度：<strong id="currentSpan">0</strong></span>
+            <span>最高广度：<strong id="bestSpan">0</strong></span>
+          </div>
+          <div class="numpad" id="numpad">
+            <button onclick="numpadInput(1)">1</button>
+            <button onclick="numpadInput(2)">2</button>
+            <button onclick="numpadInput(3)">3</button>
+            <button onclick="numpadInput(4)">4</button>
+            <button onclick="numpadInput(5)">5</button>
+            <button onclick="numpadInput(6)">6</button>
+            <button onclick="numpadInput(7)">7</button>
+            <button onclick="numpadInput(8)">8</button>
+            <button onclick="numpadInput(9)">9</button>
+            <button class="numpad-wide" onclick="numpadClear()">⌫</button>
+            <button onclick="numpadInput(0)">0</button>
+            <button class="numpad-wide numpad-confirm" onclick="numpadConfirm()">✓</button>
+          </div>
+          <button id="digitStartBtn" onclick="startDigitSpan()" class="game-main-btn">开始</button>
+          <p class="digit-input-display" id="digitInputDisplay"></p>
+        </div>
+
+        <!-- 面板：黑猩猩测试 -->
+        <div class="game-panel" id="panel-chimp">
+          <div class="chimp-grid" id="chimpGrid"></div>
+          <p class="game-hint" id="chimpHint">记住数字位置，按顺序点击</p>
+          <div class="game-stats">
+            <span>得分：<strong id="chimpScore">0</strong> / 9</span>
+            <span>最高：<strong id="chimpBest">0</strong></span>
+          </div>
+          <button id="chimpStartBtn" onclick="startChimpTest()">开始</button>
+        </div>
+
+        <!-- 面板：划消任务 -->
+        <div class="game-panel" id="panel-cancel">
+          <div class="cancel-grid" id="cancelGrid"></div>
+          <p class="game-hint" id="cancelHint">在 30 秒内点击所有字母 <strong>A</strong></p>
+          <div class="game-stats">
+            <span>正确：<strong id="cancelCorrect">0</strong></span>
+            <span>错误：<strong id="cancelWrong">0</strong></span>
+            <span>剩余：<strong id="cancelRemain">0</strong> s</span>
+          </div>
+          <button id="cancelStartBtn" onclick="startCancelTask()">开始</button>
         </div>
       </div>
     </div>

@@ -8,6 +8,11 @@
   --primary-hover: #2980b9;
   --shadow: rgba(0, 0, 0, 0.1);
   --border: #e0e0e0;
+  --tab-bg: #e8ecf1;
+  --tab-active: #fff;
+  --success: #27ae60;
+  --danger: #e74c3c;
+  --warning: #f39c12;
 }
 
 [data-theme="dark"] {
@@ -19,6 +24,11 @@
   --primary-hover: #1a5276;
   --shadow: rgba(0, 0, 0, 0.4);
   --border: #2a2a4a;
+  --tab-bg: #0f1a2e;
+  --tab-active: #16213e;
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f1c40f;
 }
 
 * {
@@ -31,7 +41,7 @@ body {
   background-color: var(--bg);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   margin: 0;
   font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -44,56 +54,56 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   width: 100%;
   max-width: 420px;
+  padding-bottom: 40px;
 }
 
 /* ===== 卡片 ===== */
 .card {
   background: var(--card-bg);
-  padding: 36px 32px;
+  padding: 24px 28px;
   border-radius: 16px;
   text-align: center;
   box-shadow: 0 4px 20px var(--shadow);
   transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
   border: 1px solid var(--border);
+  animation: fadeInUp 0.5s ease-out;
 }
 
 .card:hover {
   transform: translateY(-2px);
 }
 
-h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
+.greeting-card {
+  padding-bottom: 20px;
 }
 
-h2 {
-  font-size: 22px;
-  margin-bottom: 12px;
-  color: var(--text);
+h1 {
+  font-size: 26px;
+  margin-bottom: 4px;
 }
 
 p {
   color: var(--text-secondary);
   margin-bottom: 4px;
+  font-size: 14px;
 }
 
 /* ===== 时钟 ===== */
 .clock {
-  font-size: 36px;
+  font-size: 34px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: 2px;
   color: var(--primary);
-  margin: 12px 0 20px;
-  padding: 8px 0;
+  margin: 8px 0 14px;
+  padding: 6px 0;
 }
 
 /* ===== 按钮 ===== */
 button {
-  margin-top: 16px;
   padding: 10px 24px;
   background-color: var(--primary);
   color: white;
@@ -111,6 +121,14 @@ button:hover {
 
 button:active {
   transform: scale(0.97);
+}
+
+.game-main-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  font-size: 17px;
+  font-weight: 600;
 }
 
 /* ===== 深色模式切换按钮 ===== */
@@ -135,50 +153,286 @@ button:active {
   transform: scale(1.1);
 }
 
-/* ===== 计数器 ===== */
-.counter-card {
-  padding: 28px 32px 32px;
+/* ===== 标签栏 ===== */
+.tab-bar {
+  display: flex;
+  background: var(--tab-bg);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  border: 1px solid var(--border);
 }
 
-.counter-display {
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 10px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.tab-item.active {
+  background: var(--tab-active);
+  color: var(--text);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.tab-item:hover:not(.active) {
+  color: var(--text);
+}
+
+/* ===== 游戏容器 ===== */
+.game-container {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 24px 20px 28px;
+  box-shadow: 0 4px 20px var(--shadow);
+  border: 1px solid var(--border);
+  transition: background 0.3s, box-shadow 0.3s;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.game-panel {
+  display: none;
+}
+
+.game-panel.active {
+  display: block;
+}
+
+.game-hint {
+  font-size: 13px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: space-around;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 10px 0 12px;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.game-stats strong {
+  color: var(--text);
+}
+
+/* ===== 通用游戏区域 ===== */
+.game-area {
+  width: 100%;
+  height: 120px;
+  margin: 8px 0 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+  background: var(--primary);
+}
+
+.game-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  pointer-events: none;
+}
+
+/* ===== 反应速度 ===== */
+.reaction-area.waiting {
+  background: var(--danger);
+}
+
+.reaction-area.ready {
+  background: var(--success);
+  animation: pulse 0.6s ease-in-out infinite;
+}
+
+/* ===== 数字广度 ===== */
+.digit-display {
+  width: 100%;
+  height: 100px;
+  background: var(--tab-bg);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 56px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--primary);
-  margin: 8px 0 16px;
-  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: 4px;
+  transition: background 0.15s;
 }
 
-.counter-actions {
+.digit-input-display {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: var(--text);
+  min-height: 36px;
+  text-align: center;
+  margin: 6px 0 0;
+  padding: 6px;
+  background: var(--tab-bg);
+  border-radius: 8px;
+}
+
+.digit-stats {
   display: flex;
-  gap: 12px;
-  justify-content: center;
+  justify-content: space-around;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 6px 0 10px;
 }
 
-.counter-actions button {
+.digit-stats strong {
+  color: var(--text);
+}
+
+/* ===== 九宫格数字键盘 ===== */
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+
+.numpad button {
   margin: 0;
-  min-width: 60px;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.counter-actions button:first-child,
-.counter-actions button:last-child {
+  padding: 14px 0;
   font-size: 22px;
+  font-weight: 700;
+  border-radius: 10px;
 }
 
-/* ===== 淡入动画 ===== */
+.numpad-wide {
+  grid-column: span 1;
+}
+
+.numpad-confirm {
+  background: var(--success) !important;
+}
+
+.numpad-confirm:hover {
+  background: #219a52 !important;
+}
+
+/* ===== 黑猩猩测试 ===== */
+.chimp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 320px;
+  margin: 8px auto;
+}
+
+.chimp-cell {
+  aspect-ratio: 1;
+  background: var(--primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.chimp-cell.show-number {
+  background: var(--primary);
+}
+
+.chimp-cell.hidden {
+  background: var(--tab-bg);
+  color: transparent;
+}
+
+.chimp-cell.hidden:hover {
+  background: var(--border);
+  transform: scale(1.05);
+}
+
+.chimp-cell.found {
+  background: var(--success);
+  color: #fff;
+  cursor: default;
+}
+
+.chimp-cell.wrong {
+  background: var(--danger);
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* ===== 划消任务 ===== */
+.cancel-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  max-width: 380px;
+  margin: 8px auto;
+}
+
+.cancel-cell {
+  aspect-ratio: 1;
+  background: var(--tab-bg);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s;
+}
+
+.cancel-cell:hover {
+  transform: scale(1.06);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.cancel-cell.found {
+  background: var(--success);
+  color: #fff;
+  cursor: default;
+  transform: scale(0.95);
+}
+
+.cancel-cell.wrong {
+  background: var(--danger);
+  color: #fff;
+  cursor: default;
+  animation: shake 0.3s;
+}
+
+/* ===== 动画 ===== */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.card {
-  animation: fadeInUp 0.5s ease-out;
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
 }
