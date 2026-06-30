@@ -1,41 +1,184 @@
-      body {
-        background-color: #f0f4f8;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        font-family: sans-serif;
-      }
+/* ===== 基础重置 & 变量 ===== */
+:root {
+  --bg: #f0f4f8;
+  --card-bg: #ffffff;
+  --text: #2c3e50;
+  --text-secondary: #666;
+  --primary: #3498db;
+  --primary-hover: #2980b9;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --border: #e0e0e0;
+}
 
-      .card {
-        background: white;
-        padding: 40px;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
+[data-theme="dark"] {
+  --bg: #1a1a2e;
+  --card-bg: #16213e;
+  --text: #eaeaea;
+  --text-secondary: #aaa;
+  --primary: #0f3460;
+  --primary-hover: #1a5276;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --border: #2a2a4a;
+}
 
-      h1 {
-        color: #2c3e50;
-        margin-bottom: 12px;
-      }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-      p {
-        color: #666;
-      }
+body {
+  background-color: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
+  padding: 20px;
+}
 
-      button {
-        margin-top: 20px;
-        padding: 10px 24px;
-        background-color: #3498db;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-      }
+/* ===== 容器 ===== */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 420px;
+}
 
-      button:hover {
-        background-color: #2980b9;
-      }
+/* ===== 卡片 ===== */
+.card {
+  background: var(--card-bg);
+  padding: 36px 32px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 20px var(--shadow);
+  transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+  border: 1px solid var(--border);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+h2 {
+  font-size: 22px;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+p {
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+/* ===== 时钟 ===== */
+.clock {
+  font-size: 36px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+  color: var(--primary);
+  margin: 12px 0 20px;
+  padding: 8px 0;
+}
+
+/* ===== 按钮 ===== */
+button {
+  margin-top: 16px;
+  padding: 10px 24px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.03);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* ===== 深色模式切换按钮 ===== */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 22px;
+  border-radius: 50px;
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1px solid var(--border);
+  z-index: 100;
+  line-height: 1;
+}
+
+.theme-toggle:hover {
+  background: var(--card-bg);
+  transform: scale(1.1);
+}
+
+/* ===== 计数器 ===== */
+.counter-card {
+  padding: 28px 32px 32px;
+}
+
+.counter-display {
+  font-size: 56px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+  margin: 8px 0 16px;
+  line-height: 1.2;
+}
+
+.counter-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.counter-actions button {
+  margin: 0;
+  min-width: 60px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.counter-actions button:first-child,
+.counter-actions button:last-child {
+  font-size: 22px;
+}
+
+/* ===== 淡入动画 ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeInUp 0.5s ease-out;
+}

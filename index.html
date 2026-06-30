@@ -2,14 +2,33 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8">
-    <title>我的第一个网页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的交互小工具</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div class="card">
-      <h1>你好，git</h1>
-      <p id="message">"这是我的第一个网页，现在它还只是一个本地的 HTML 文件。</p>
-      <button onclick="changeMessage()">改变我</button>
+    <div class="container">
+      <!-- 深色模式切换 -->
+      <button id="themeToggle" class="theme-toggle" aria-label="切换深色模式">🌙</button>
+
+      <!-- 问候卡片 -->
+      <div class="card">
+        <h1 id="greeting">你好！</h1>
+        <div id="clock" class="clock">--:--:--</div>
+        <p id="message">欢迎来到我的交互小工具页面。</p>
+        <button onclick="changeMessage()">换一条消息</button>
+      </div>
+
+      <!-- 计数器卡片 -->
+      <div class="card counter-card">
+        <h2>计数器</h2>
+        <div class="counter-display" id="counter">0</div>
+        <div class="counter-actions">
+          <button onclick="decrement()">−</button>
+          <button onclick="resetCounter()">重置</button>
+          <button onclick="increment()">+</button>
+        </div>
+      </div>
     </div>
     <script src="scripts.js"></script>
   </body>
