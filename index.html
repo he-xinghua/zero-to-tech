@@ -1,98 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>认知训练小工具</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zero to Tech · 个人主页</title>
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/hero.css" />
+    <link rel="stylesheet" href="css/nav.css" />
+    <link rel="stylesheet" href="css/cards.css" />
+    <link rel="stylesheet" href="css/lab.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
   </head>
   <body>
-    <div class="container">
-      <!-- 深色模式切换 -->
-      <button id="themeToggle" class="theme-toggle" aria-label="切换深色模式">🌙</button>
+    <div class="app-shell">
+      <div class="page-shell">
+        <main class="page-content">
+          <section class="dashboard-grid">
 
-      <!-- 问候卡片 -->
-      <div class="card greeting-card">
-        <h1 id="greeting">你好！</h1>
-        <div id="clock" class="clock">--:--:--</div>
-        <p id="message">欢迎来到认知训练小工具。</p>
-        <button onclick="changeMessage()">换一条</button>
-      </div>
+            <!-- ↓↓↓ 顶部 hero：品牌 + 导航 + 大标题 + 副标题 ↓↓↓ -->
+            <!-- 这一整块在 text-lab.html 里几乎一字不差地又抄了一遍 -->
+            <article class="hero-stage panel-full">
+              <div class="hero-topline">
+                <p class="brand-eyebrow">zero to tech</p>
+                <nav class="inline-links hero-nav">
+                  <a class="nav-link" href="index.html">个人主页</a>
+                  <a class="nav-link" href="text-lab.html">文字实验室</a>
+                </nav>
+              </div>
+              <div class="hero-copy">
+                <h1 class="hero-display">关于我</h1>
+                <p class="hero-subtitle">项目，创意，灵感，心得，我的作品</p>
+              </div>
+            </article>
+            <!-- ↑↑↑ hero 结束 ↑↑↑ -->
 
-      <!-- 标签栏 -->
-      <div class="tab-bar" id="tabBar">
-        <div class="tab-item active" data-tab="reaction" onclick="switchTab('reaction')">⚡ 反应</div>
-        <div class="tab-item" data-tab="digit" onclick="switchTab('digit')">🧠 数字</div>
-        <div class="tab-item" data-tab="chimp" onclick="switchTab('chimp')">🐵 黑猩猩</div>
-        <div class="tab-item" data-tab="cancel" onclick="switchTab('cancel')">✂️ 划消</div>
-      </div>
+            <article class="panel panel-full featured-work-panel card">
+              <p class="section-kicker">作品</p>
+              <p class="featured-title">文字实验室</p>
+              <p class="featured-copy">拼音和情绪，挖掘中文里的细节</p>
+              <a class="featured-link" href="text-lab.html">
+                <span class="featured-link-label">打开作品</span>
+                <span class="arrow">›</span>
+              </a>
+            </article>
 
-      <!-- 游戏容器 -->
-      <div class="game-container">
-        <!-- 面板：反应速度 -->
-        <div class="game-panel active" id="panel-reaction">
-          <div class="game-area reaction-area" id="reactionArea" onclick="handleReactionClick()">
-            <span class="game-text" id="reactionText">点击开始</span>
-          </div>
-          <p class="game-hint" id="reactionHint">点击上方区域开始测试</p>
-          <div class="game-stats">
-            <span>上次：<strong id="lastTime">--</strong> ms</span>
-            <span>最快：<strong id="bestTime">--</strong> ms</span>
-          </div>
-          <div class="rating-badge" id="reactionRating"></div>
-          <button onclick="startReactionGame()">重新开始</button>
-        </div>
+            <article class="panel panel-full identity-panel card">
+              <div class="identity-item">
+                <p class="section-kicker">座右铭</p>
+                <p class="identity-value identity-quote">已识乾坤大，尤怜草木青</p>
+              </div>
+              <div class="identity-item">
+                <p class="section-kicker">正在学习</p>
+                <p class="identity-value">零到全栈</p>
+              </div>
+            </article>
 
-        <!-- 面板：数字广度 -->
-        <div class="game-panel" id="panel-digit">
-          <div class="digit-display" id="digitDisplay">—</div>
-          <p class="game-hint" id="digitHint">点击"开始"后记住出现的数字</p>
-          <div class="digit-stats">
-            <span>当前广度：<strong id="currentSpan">0</strong></span>
-            <span>最高广度：<strong id="bestSpan">0</strong></span>
-          </div>
-          <div class="numpad" id="numpad">
-            <button onclick="numpadInput(1)">1</button>
-            <button onclick="numpadInput(2)">2</button>
-            <button onclick="numpadInput(3)">3</button>
-            <button onclick="numpadInput(4)">4</button>
-            <button onclick="numpadInput(5)">5</button>
-            <button onclick="numpadInput(6)">6</button>
-            <button onclick="numpadInput(7)">7</button>
-            <button onclick="numpadInput(8)">8</button>
-            <button onclick="numpadInput(9)">9</button>
-            <button class="numpad-wide" onclick="numpadClear()">⌫</button>
-            <button onclick="numpadInput(0)">0</button>
-            <button class="numpad-wide numpad-confirm" onclick="numpadConfirm()">✓</button>
-          </div>
-          <button id="digitStartBtn" onclick="startDigitSpan()" class="game-main-btn">开始</button>
-          <p class="digit-input-display" id="digitInputDisplay"></p>
-        </div>
-
-        <!-- 面板：黑猩猩测试 -->
-        <div class="game-panel" id="panel-chimp">
-          <div class="chimp-grid" id="chimpGrid"></div>
-          <p class="game-hint" id="chimpHint">记住数字位置，按顺序点击</p>
-          <div class="game-stats">
-            <span>得分：<strong id="chimpScore">0</strong> / 9</span>
-            <span>最高：<strong id="chimpBest">0</strong></span>
-          </div>
-          <button id="chimpStartBtn" onclick="startChimpTest()">开始</button>
-        </div>
-
-        <!-- 面板：划消任务 -->
-        <div class="game-panel" id="panel-cancel">
-          <div class="cancel-grid" id="cancelGrid"></div>
-          <p class="game-hint" id="cancelHint">15 秒内点击所有数字 <strong>6</strong></p>
-          <div class="game-stats">
-            <span>正确：<strong id="cancelCorrect">0</strong></span>
-            <span>错误：<strong id="cancelWrong">0</strong></span>
-            <span>剩余：<strong id="cancelRemain">0</strong> s</span>
-          </div>
-          <button id="cancelStartBtn" onclick="startCancelTask()">开始</button>
-        </div>
+          </section>
+        </main>
       </div>
     </div>
-    <script src="scripts.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/animejs@4/lib/anime.iife.min.js"></script>
+    <script src="js/cards.js"></script>
+    <script src="js/score.js"></script>
+    <script src="js/nav.js"></script>
   </body>
 </html>
