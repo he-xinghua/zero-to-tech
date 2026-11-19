@@ -21,3 +21,7 @@ dist/
 backend/.venv/
 backend/__pycache__/
 backend/history.db
+
+docs
+tmp
+
